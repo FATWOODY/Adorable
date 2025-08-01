@@ -1,13 +1,14 @@
 import "server-only";
 
+import { cache } from "react";
 import { StackServerApp } from "@stackframe/stack";
 import { freestyle } from "@/lib/freestyle";
 
-export function getStackServerApp() {
+export const getStackServerApp = cache(() => {
   return new StackServerApp({
     tokenStore: "nextjs-cookie",
   });
-}
+});
 
 export async function getUser() {
   const stackServerApp = getStackServerApp();
