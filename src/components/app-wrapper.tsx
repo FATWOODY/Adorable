@@ -7,6 +7,8 @@ import { MessageCircle, Monitor } from "lucide-react";
 import WebView from "./webview";
 import { UIMessage } from "ai";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ErrorBoundary } from "./error-boundary";
+import { LoadingSpinner } from "./ui/loading-spinner";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +23,7 @@ export default function AppWrapper({
   running,
   codeServerUrl,
   consoleUrl,
+  status = "idle",
 }: {
   appName: string;
   repo: string;
@@ -33,6 +36,7 @@ export default function AppWrapper({
   consoleUrl: string;
   domain?: string;
   running: boolean;
+  status?: "idle" | "building" | "running" | "error" | "deployed";
 }) {
   const [mobileActiveTab, setMobileActiveTab] = useState<"chat" | "preview">(
     "chat"
@@ -81,20 +85,40 @@ export default function AppWrapper({
           }
         >
           <QueryClientProvider client={queryClient}>
-            <Chat
-              topBar={
-                <TopBar
-                  appName={appName}
-                  repoId={repoId}
-                  consoleUrl={consoleUrl}
-                  codeServerUrl={codeServerUrl}
-                />
-              }
-              appId={appId}
-              initialMessages={initialMessages}
-              key={appId}
-              running={running}
-            />
+            <ErrorBoundary
+              fallback={({ error, resetError }) => (
+                <div className="flex flex-col items-center justify-center h-full p-8">
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold mb-2">Chat Error</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                      Failed to load the chat interface
+                    </p>
+                    <button
+                      onClick={resetError}
+                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                </div>
+              )}
+            >
+              <Chat
+                topBar={
+                  <TopBar
+                    appName={appName}
+                    repoId={repoId}
+                    consoleUrl={consoleUrl}
+                    codeServerUrl={codeServerUrl}
+                    status={status}
+                  />
+                }
+                appId={appId}
+                initialMessages={initialMessages}
+                key={appId}
+                running={running}
+              />
+            </ErrorBoundary>
           </QueryClientProvider>
         </div>
 
@@ -119,12 +143,31 @@ export default function AppWrapper({
           }
         >
           <div className="h-full overflow-hidden relative">
-            <WebView
-              repo={repo}
-              baseId={baseId}
-              appId={appId}
-              domain={domain}
-            />
+            <ErrorBoundary
+              fallback={({ error, resetError }) => (
+                <div className="flex flex-col items-center justify-center h-full p-8">
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold mb-2">Preview Error</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
+                      Failed to load the app preview
+                    </p>
+                    <button
+                      onClick={resetError}
+                      className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                </div>
+              )}
+            >
+              <WebView
+                repo={repo}
+                baseId={baseId}
+                appId={appId}
+                domain={domain}
+              />
+            </ErrorBoundary>
           </div>
         </div>
       </div>

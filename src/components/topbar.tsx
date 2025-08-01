@@ -15,6 +15,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
+import { AppStatusIndicator } from "./app-status-indicator";
 
 export function TopBar({
   appName,
@@ -22,12 +23,14 @@ export function TopBar({
   repoId,
   consoleUrl,
   codeServerUrl,
+  status = "idle",
 }: {
   appName: string;
   children?: React.ReactNode;
   repoId: string;
   consoleUrl: string;
   codeServerUrl: string;
+  status?: "idle" | "building" | "running" | "error" | "deployed";
 }) {
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -37,6 +40,12 @@ export function TopBar({
         <HomeIcon className="h-5 w-5" />
       </Link>
 
+      <div className="flex items-center gap-3">
+        <AppStatusIndicator status={status} />
+        <span className="text-sm font-medium truncate max-w-[200px]">
+          {appName}
+        </span>
+      </div>
       <Dialog open={modalOpen} onOpenChange={setModalOpen}>
         <DialogTrigger asChild>
           <Button size="sm" variant={"ghost"}>

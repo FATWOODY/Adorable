@@ -54,6 +54,10 @@ export default async function AppPage({
   // Use the previewDomain from the database, or fall back to a generated domain
   const domain = app.info.previewDomain;
 
+  // Determine app status based on chat state
+  const chatStatus = await chatState(app.info.id);
+  const appStatus = chatStatus.state === "running" ? "building" : "running";
+
   return (
     <AppWrapper
       key={app.info.id}
@@ -67,6 +71,7 @@ export default async function AppPage({
       repoId={app.info.gitRepo}
       domain={domain ?? undefined}
       running={(await chatState(app.info.id)).state === "running"}
+      status={appStatus}
     />
   );
 }

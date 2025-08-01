@@ -12,6 +12,7 @@ import { useQuery } from "@tanstack/react-query";
 import { chatState } from "@/actions/chat-streaming";
 import { CompressedImage } from "@/lib/image-compression";
 import { useChatSafe } from "./use-chat";
+import { LoadingSpinner } from "./ui/loading-spinner";
 
 export default function Chat(props: {
   appId: string;
@@ -36,11 +37,15 @@ export default function Chat(props: {
   });
 
   const [input, setInput] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = (e?: React.FormEvent<HTMLFormElement>) => {
     if (e?.preventDefault) {
       e.preventDefault();
     }
+    if (isSubmitting || !input.trim()) return;
+    
+    setIsSubmitting(true);
     sendMessage(
       {
         parts: [
@@ -54,12 +59,21 @@ export default function Chat(props: {
         headers: {
           "Adorable-App-Id": props.appId,
         },
+        onFinish: () => {
+          setIsSubmitting(false);
+        },
+        onError: () => {
+          setIsSubmitting(false);
+        },
       }
     );
     setInput("");
   };
 
   const onSubmitWithImages = (text: string, images: CompressedImage[]) => {
+    if (isSubmitting) return;
+    
+    setIsSubmitting(true);
     const parts: Parameters<typeof sendMessage>[0]["parts"] = [];
 
     if (text.trim()) {
@@ -85,12 +99,19 @@ export default function Chat(props: {
         headers: {
           "Adorable-App-Id": props.appId,
         },
+        onFinish: () => {
+          setIsSubmitting(false);
+        },
+        onError: () => {
+          setIsSubmitting(false);
+        },
       }
     );
     setInput("");
   };
 
   async function handleStop() {
+    setIsSubmitting(false);
     await fetch("/api/chat/" + props.appId + "/stream", {
       method: "DELETE",
       headers: {
@@ -113,6 +134,14 @@ export default function Chat(props: {
           {messages.map((message: any) => (
             <MessageBody key={message.id} message={message} />
           ))}
+          {(props.isLoading || chat?.state === "running" || isSubmitting) && (
+            <div className="flex items-center gap-2 py-2">
+              <LoadingSpinner size="sm" />
+              <span className="text-sm text-gray-500">
+                {isSubmitting ? "Sending..." : "AI is thinking..."}
+              </span>
+            </div>
+          )}
         </ChatContainer>
       </div>
       <div className="flex-shrink-0 p-3 transition-all bg-background md:backdrop-blur-sm">
@@ -124,7 +153,7 @@ export default function Chat(props: {
           }}
           onSubmit={onSubmit}
           onSubmitWithImages={onSubmitWithImages}
-          isGenerating={props.isLoading || chat?.state === "running"}
+          isGenerating={props.isLoading || chat?.state === "running" || isSubmitting}
         />
       </div>
     </div>
