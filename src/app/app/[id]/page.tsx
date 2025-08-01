@@ -49,7 +49,12 @@ export default async function AppPage({
     repoId: app?.info.gitRepo,
   });
 
-  console.log("requested dev server");
+  console.log("requested dev server for app:", {
+    appId: id,
+    repoId: app?.info.gitRepo,
+    ephemeralUrl,
+    codeServerUrl
+  });
 
   // Use the previewDomain from the database, or fall back to a generated domain
   const domain = app.info.previewDomain;

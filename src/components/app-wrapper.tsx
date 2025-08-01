@@ -39,7 +39,7 @@ export default function AppWrapper({
   status?: "idle" | "building" | "running" | "error" | "deployed";
 }) {
   const [mobileActiveTab, setMobileActiveTab] = useState<"chat" | "preview">(
-    "chat"
+    "preview"
   );
   const [isMobile, setIsMobile] = useState(false);
 
@@ -149,13 +149,16 @@ export default function AppWrapper({
                   <div className="text-center">
                     <h3 className="text-lg font-semibold mb-2">Preview Error</h3>
                     <p className="text-gray-600 dark:text-gray-400 mb-4">
-                      Failed to load the app preview
+                      Failed to load the app preview. This might be because the development server is still starting up.
+                    </p>
+                    <p className="text-sm text-gray-500 mb-4">
+                      Try refreshing in a few moments, or check the chat for any build errors.
                     </p>
                     <button
                       onClick={resetError}
                       className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
                     >
-                      Retry
+                      Retry Preview
                     </button>
                   </div>
                 </div>
@@ -163,6 +166,7 @@ export default function AppWrapper({
             >
               <WebView
                 repo={repo}
+                key={`${repo}-${appId}`}
                 baseId={baseId}
                 appId={appId}
                 domain={domain}
