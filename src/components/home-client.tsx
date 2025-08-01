@@ -8,11 +8,16 @@ import LogoSvg from "@/logo.svg";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ExampleButton } from "@/components/ExampleButton";
-import { UserButton } from "@stackframe/stack";
 import { UserApps } from "@/components/user-apps";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PromptInputTextareaWithTypingAnimation } from "@/components/prompt-input";
 import { ErrorBoundary } from "@/components/error-boundary";
+import dynamic from "next/dynamic";
+
+const UserButton = dynamic(() => import("@stackframe/stack").then(mod => ({ default: mod.UserButton })), {
+  ssr: false,
+  loading: () => <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse" />
+});
 
 const queryClient = new QueryClient();
 
