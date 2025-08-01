@@ -3,12 +3,16 @@ import { getUserApps } from "@/actions/user-apps";
 import { AppCard } from "./app-card";
 import { LoadingSpinner } from "./ui/loading-spinner";
 
-export function UserApps() {
+interface UserAppsProps {
+  initialUserApps: any[];
+}
+
+export function UserApps({ initialUserApps }: UserAppsProps) {
   const queryClient = useQueryClient();
   const { data, isLoading, error } = useQuery({
     queryKey: ["userApps"],
     queryFn: getUserApps,
-    initialData: [],
+    initialData: initialUserApps,
   });
 
   const onAppDeleted = () => {

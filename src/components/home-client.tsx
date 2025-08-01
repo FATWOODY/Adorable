@@ -21,7 +21,11 @@ const UserButton = dynamic(() => import("@stackframe/stack").then(mod => ({ defa
 
 const queryClient = new QueryClient();
 
-export function HomeClient() {
+interface HomeClientProps {
+  initialUserApps: any[];
+}
+
+export function HomeClient({ initialUserApps }: HomeClientProps) {
   const [prompt, setPrompt] = useState("");
   const [framework, setFramework] = useState("nextjs");
   const [isLoading, setIsLoading] = useState(false);
@@ -113,7 +117,7 @@ export function HomeClient() {
             </div>
           </div>
           <div className="border-t py-8 mx-0 sm:-mx-4">
-            <UserApps />
+            <UserApps initialUserApps={initialUserApps} />
           </div>
         </main>
       </ErrorBoundary>
