@@ -15,7 +15,6 @@ import { ErrorBoundary } from "@/components/error-boundary";
 import dynamic from "next/dynamic";
 
 const UserButton = dynamic(() => import("@stackframe/stack").then(mod => ({ default: mod.UserButton })), {
-  ssr: false,
   loading: () => <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse" />
 });
 
