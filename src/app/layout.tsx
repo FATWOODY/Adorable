@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { StackProvider, StackTheme } from "@stackframe/stack";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { stackServerApp } from "@/auth/stack-auth";
+import { getStackServerApp } from "@/auth/stack-auth";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "sonner";
 import { cn } from "@/lib/utils";
@@ -35,6 +35,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const stackServerApp = getStackServerApp();
+
   return (
     <html lang="en" suppressHydrationWarning>
       {/* <head>
